@@ -31,8 +31,8 @@ namespace UserAdministration
         {
             this.cancelButton = new System.Windows.Forms.Button();
             this.confirmButton = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.usernameBox = new System.Windows.Forms.TextBox();
+            this.passwordBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -45,6 +45,7 @@ namespace UserAdministration
             this.cancelButton.TabIndex = 1;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
             // confirmButton
             // 
@@ -56,19 +57,20 @@ namespace UserAdministration
             this.confirmButton.UseVisualStyleBackColor = true;
             this.confirmButton.Click += new System.EventHandler(this.confirmButton_Click);
             // 
-            // textBox1
+            // usernameBox
             // 
-            this.textBox1.Location = new System.Drawing.Point(68, 83);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(358, 27);
-            this.textBox1.TabIndex = 3;
+            this.usernameBox.Location = new System.Drawing.Point(68, 83);
+            this.usernameBox.Name = "usernameBox";
+            this.usernameBox.Size = new System.Drawing.Size(358, 27);
+            this.usernameBox.TabIndex = 3;
             // 
-            // textBox2
+            // passwordBox
             // 
-            this.textBox2.Location = new System.Drawing.Point(68, 210);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(358, 27);
-            this.textBox2.TabIndex = 4;
+            this.passwordBox.Location = new System.Drawing.Point(68, 210);
+            this.passwordBox.Name = "passwordBox";
+            this.passwordBox.PasswordChar = '●';
+            this.passwordBox.Size = new System.Drawing.Size(358, 27);
+            this.passwordBox.TabIndex = 4;
             // 
             // label1
             // 
@@ -95,12 +97,13 @@ namespace UserAdministration
             this.ClientSize = new System.Drawing.Size(494, 386);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.passwordBox);
+            this.Controls.Add(this.usernameBox);
             this.Controls.Add(this.confirmButton);
             this.Controls.Add(this.cancelButton);
             this.Name = "Form2";
             this.Text = "Form2";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form2_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -110,8 +113,8 @@ namespace UserAdministration
 
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Button confirmButton;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox usernameBox;
+        private System.Windows.Forms.TextBox passwordBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
     }
