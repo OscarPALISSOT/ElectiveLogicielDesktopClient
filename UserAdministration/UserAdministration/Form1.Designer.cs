@@ -36,8 +36,9 @@ namespace UserAdministration
             this.connectButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.roleBox = new System.Windows.Forms.CheckedListBox();
+            this.roleButton = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
-            this.roleBox = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -112,6 +113,7 @@ namespace UserAdministration
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Enabled = false;
             this.dataGridView1.Location = new System.Drawing.Point(12, 12);
+            this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersWidth = 51;
@@ -124,8 +126,9 @@ namespace UserAdministration
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.roleBox);
+            this.groupBox1.Controls.Add(this.roleButton);
+            this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
@@ -137,26 +140,37 @@ namespace UserAdministration
             this.groupBox1.Enabled = false;
             this.groupBox1.Location = new System.Drawing.Point(828, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(309, 437);
+            this.groupBox1.Size = new System.Drawing.Size(309, 472);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 364);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(45, 20);
-            this.label5.TabIndex = 9;
-            this.label5.Text = "Roles";
             // 
             // roleBox
             // 
             this.roleBox.FormattingEnabled = true;
-            this.roleBox.Location = new System.Drawing.Point(6, 387);
+            this.roleBox.Location = new System.Drawing.Point(6, 396);
             this.roleBox.Name = "roleBox";
-            this.roleBox.Size = new System.Drawing.Size(297, 28);
-            this.roleBox.TabIndex = 8;
+            this.roleBox.Size = new System.Drawing.Size(172, 70);
+            this.roleBox.TabIndex = 10;
+            this.roleBox.EnabledChanged += new System.EventHandler(this.checkedListBox1_EnabledChanged);
+            // 
+            // roleButton
+            // 
+            this.roleButton.Location = new System.Drawing.Point(184, 396);
+            this.roleButton.Name = "roleButton";
+            this.roleButton.Size = new System.Drawing.Size(119, 70);
+            this.roleButton.TabIndex = 7;
+            this.roleButton.Text = "Role Management...";
+            this.roleButton.UseVisualStyleBackColor = true;
+            this.roleButton.Click += new System.EventHandler(this.roleButton_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 373);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(45, 20);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "Roles";
             // 
             // label4
             // 
@@ -235,6 +249,7 @@ namespace UserAdministration
             this.Controls.Add(this.editButton);
             this.Controls.Add(this.addButton);
             this.Controls.Add(this.searchButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -254,7 +269,6 @@ namespace UserAdministration
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ComboBox roleBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
@@ -263,6 +277,8 @@ namespace UserAdministration
         private System.Windows.Forms.TextBox EmailBox;
         private System.Windows.Forms.TextBox LastNameBox;
         private System.Windows.Forms.TextBox FirstNameBox;
+        private System.Windows.Forms.Button roleButton;
+        private System.Windows.Forms.CheckedListBox roleBox;
     }
 }
 

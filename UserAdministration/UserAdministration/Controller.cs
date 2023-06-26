@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using BCrypt.Net;
 using Microsoft.Data.SqlClient;
 
 namespace UserAdministration
@@ -15,49 +16,78 @@ namespace UserAdministration
         {
             builder.UserID = user;
             builder.Password = password;
-            builder.DataSource = "NY2AX202-1.numerilab-cesi.fr";//TODO: mettre la chaine de connexion
+            builder.DataSource = "NY2AX202-1.numerilab-cesi.fr";//TODO: mettre la chaine de connexion, elle est mise c'est bon
             builder.InitialCatalog = "UserDb";
             builder.TrustServerCertificate = true;
             connection = new SqlConnection(builder.ConnectionString);
             connection.Open();
         }
 
-        public SqlCommand Select(List<string> columns, List<string> values) {
+        ~Controller()
+        {
+            builder.Clear();
+            connection.Close();
+        }
+
+        public SqlCommand Select(List<string> columns, List<string> values, string table = "Users") {
             SqlCommand command = connection.CreateCommand();
-            command.CommandText = string.Format("SELECT Users.* FROM Users LEFT JOIN UserRole ON Users.UserID = UserRole.UserID WHERE {0} LIKE '%{1}%'",columns[0], values[0]);
+            command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} LIKE '%{2}%'", table, columns[0], values[0]);
             for (int i = 1; i < columns.Count; i++)
                 command.CommandText += string.Format(" OR {0} LIKE '%{1}%'", columns[i], values[i]);
             command.CommandText += ';';
             return command;
         }
 
-        public SqlCommand Select(){
+        public SqlDataReader SelectRole(int values)
+        {
             SqlCommand command = connection.CreateCommand();
-            command.CommandText = "SELECT Users.* FROM Users LEFT JOIN UserRole ON Users.UserID = UserRole.UserID;";
+            command.CommandText = string.Format("SELECT * FROM UserRole WHERE UserID = {0};", values);
+            SqlDataReader reader = command.ExecuteReader();
+            return reader;
+        }
+
+        public SqlCommand Select(string table = "Users"){
+            SqlCommand command = connection.CreateCommand();
+            command.CommandText = "SELECT * FROM " + table + ";";
             return command;
         }
 
         public void Delete(int ID){
-            SqlCommand command = connection.CreateCommand();
-            command.CommandText = string.Format("DELETE FROM Users WHERE UserID = {0};", ID);
-            command.ExecuteNonQuery();
-        }
-
-        public void Update(int ID, List<string> values, List<string> columns){
-            SqlCommand command = connection.CreateCommand();
-            command.CommandText = "UPDATE Users SET ";
-            for (int i = 0; i < columns.Count; i++) {
-                command.CommandText += string.Format("{0} = '{1}',",columns[i], values[i]);
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText = string.Format("DELETE FROM UserRole WHERE UserID = {0};DELETE FROM Users WHERE UserID = {0};", ID);
+                command.ExecuteNonQuery();
             }
-            command.CommandText += "UpdatedAt = GETDATE() WHERE UserID = " + ID + ";";
-            command.ExecuteNonQuery();
         }
 
-        public void Insert(List<string> values, List<string> columns)
+        public void Update(int ID, List<string> values, List<string> columns, List<Box> roles){
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText = "UPDATE Users SET ";
+                for (int i = 0; i < columns.Count; i++)
+                {
+                    command.CommandText += string.Format("{0} = '{1}',", columns[i], values[i]);
+                }
+                command.CommandText += "UpdatedAt = GETDATE() WHERE UserID = " + ID + ";";
+                command.ExecuteNonQuery();
+                command.CommandText = "DELETE FROM UserRole WHERE UserID = " + ID + ";";
+                command.ExecuteNonQuery();
+                foreach (Box role in roles)
+                {
+                    command.CommandText = string.Format("INSERT INTO UserRole (UserID, IDRole) VALUES('{0}','{1}');", ID, role.ID);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void Insert(List<string> values, List<string> columns, List<Box> roles)
         {
             SqlCommand command = connection.CreateCommand();
             command.CommandText = string.Format("INSERT INTO Users({0}) VALUES('{1}');", string.Join(",", columns), string.Join("','", values));
+            command.CommandText += "DECLARE @id INT; SET @id = @@IDENTITY;";
+            foreach (Box role in roles)
+                command.CommandText += string.Format("INSERT INTO UserRole (UserID, IDRole) VALUES (@id, {0});", role.ID) ;
             command.ExecuteNonQuery();
         }
-     }
+    }
 }

@@ -17,7 +17,8 @@ namespace UserAdministration
         public Controller ORM { set; get; }
         public bool connected = false;
         private DataSet ds;
-        public void setORM(Controller var) {
+        public void setORM(Controller var)
+        {
             ORM = var;
         }
         public Form1()
@@ -27,14 +28,16 @@ namespace UserAdministration
 
         private void searchButton_Click(object sender, EventArgs e)
         {
-            try {
+            try
+            {
                 List<TextBox> textboxes = groupBox1.Controls.OfType<TextBox>().ToList();
                 textboxes.RemoveAll(select => string.IsNullOrEmpty(select.Text));
                 List<string> columns = textboxes.Select(select => select.Name.Substring(0, select.Name.Length - 3)).ToList();
                 List<string> values = textboxes.Select(select => select.Text).ToList();
                 refreshDB(columns, values);
             }
-            catch (SqlException) {
+            catch (SqlException)
+            {
 
             }
         }
@@ -43,9 +46,10 @@ namespace UserAdministration
         {
             try
             {
+                List<Box> roles = roleBox.CheckedItems.Cast<Box>().ToList();
                 List<TextBox> textBoxes = groupBox1.Controls.OfType<TextBox>().ToList();
                 if (textBoxes.All(textbox => !string.IsNullOrWhiteSpace(textbox.Text)))
-                    ORM.Insert(textBoxes.Select(select => select.Text).ToList(), textBoxes.Select(select => select.Name.Substring(0, select.Name.Length - 3)).ToList());
+                    ORM.Insert(textBoxes.Select(select => select.Text).ToList(), textBoxes.Select(select => select.Name.Substring(0, select.Name.Length - 3)).ToList(),roles);
             }
             catch (SqlException)
             {
@@ -59,13 +63,16 @@ namespace UserAdministration
 
         private void editButton_Click(object sender, EventArgs e)
         {
-            try {
+            try
+            {
+                List<Box> roles = roleBox.CheckedItems.Cast<Box>().ToList();
                 int id = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value);
                 List<TextBox> textBoxes = groupBox1.Controls.OfType<TextBox>().ToList();
                 if (textBoxes.All(textbox => !string.IsNullOrWhiteSpace(textbox.Text)))
-                    ORM.Update(id, textBoxes.Select(select => select.Text).ToList(), textBoxes.Select(select => select.Name.Substring(0, select.Name.Length - 3)).ToList());
+                    ORM.Update(id, textBoxes.Select(select => select.Text).ToList(), textBoxes.Select(select => select.Name.Substring(0, select.Name.Length - 3)).ToList(), roles);
             }
-            catch (ArgumentOutOfRangeException) {
+            catch (ArgumentOutOfRangeException)
+            {
 
             }
             catch (SqlException)
@@ -91,12 +98,14 @@ namespace UserAdministration
             finally
             {
                 refreshDB();
+                manageTextBox();
             }
         }
 
         private void connectButton_Click(object sender, EventArgs e)
         {
-            if (!connected) {
+            if (!connected)
+            {
                 Form2 connectionForm = new Form2(this);
                 connectionForm.ShowDialog();
                 if (connected)
@@ -104,7 +113,8 @@ namespace UserAdministration
                     buttonControl(true);
                 }
             }
-            else {
+            else
+            {
                 buttonControl(false);
                 ORM = null;
                 connected = false;
@@ -113,10 +123,14 @@ namespace UserAdministration
 
         private void dataGridView1_EnabledChanged(object sender, EventArgs e)
         {
-            refreshDB();
+            if (dataGridView1.Enabled)
+                refreshDB();
+            else
+                dataGridView1.Rows.Clear();
         }
 
-        private void buttonControl(bool a) {
+        private void buttonControl(bool a)
+        {
             dataGridView1.Enabled = a;
             searchButton.Enabled = a;
             addButton.Enabled = a;
@@ -126,10 +140,44 @@ namespace UserAdministration
 
         private void dataGridView1_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            deleteButton.Enabled = true;
-            editButton.Enabled = true;
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                deleteButton.Enabled = true;
+                editButton.Enabled = true;
+                DataGridViewCellCollection row = dataGridView1.SelectedRows[0].Cells;
+                manageTextBox(row[1].Value.ToString().Trim(), row[2].Value.ToString().Trim(), row[3].Value.ToString().Trim(), row[10].Value.ToString().Trim());
+                try
+                {
+                    using (SqlDataReader reader = ORM.SelectRole(Convert.ToInt32(row[0].Value)))
+                    {
+                        List<int> checkedIndex = new List<int>();
+                        foreach (Box a in roleBox.CheckedItems)
+                            checkedIndex.Add(roleBox.Items.IndexOf(a));
+                        foreach (int index in checkedIndex)
+                            roleBox.SetItemChecked(index, false);
+                        while (reader.Read())
+                        {
+                            Box item = roleBox.Items.Cast<Box>().First(s => s.ID == reader.GetInt32(1));
+                            int index = roleBox.Items.IndexOf(item);
+                            roleBox.SetItemChecked(index, true);
+                        }
+                    }
+                }
+                catch (SqlException)
+                {
+
+                }
+            }
         }
-        
+
+        private void manageTextBox(string firstName = "", string lastName = "", string password = "", string mail = "")
+        {
+            FirstNameBox.Text = firstName;
+            LastNameBox.Text = lastName;
+            PasswordBox.Text = password;
+            EmailBox.Text = mail;
+        }
+
         private void refreshDB(params List<string>[] lists)
         {
             SqlDataAdapter dataAdapter = lists.Length == 0 ? new SqlDataAdapter(ORM.Select()) : new SqlDataAdapter(ORM.Select(lists[0], lists[1]));
@@ -139,6 +187,27 @@ namespace UserAdministration
             dataGridView1.ClearSelection();
             deleteButton.Enabled = false;
             editButton.Enabled = false;
+        }
+
+        private void roleButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkedListBox1_EnabledChanged(object sender, EventArgs e)
+        {
+            using (SqlDataReader reader = ORM.Select("Roles").ExecuteReader())
+            {
+                if (roleBox.Enabled)
+                    while (reader.Read())
+
+                    {
+                        Box cb = new Box(reader.GetInt32(0), reader.GetString(1));
+                        roleBox.Items.Add(cb);
+                    }
+                else
+                    roleBox.Items.Clear();
+            }
         }
     }
 }
