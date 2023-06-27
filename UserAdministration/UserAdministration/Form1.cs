@@ -36,9 +36,9 @@ namespace UserAdministration
                 List<string> values = textboxes.Select(select => select.Text).ToList();
                 refreshDB(columns, values);
             }
-            catch (SqlException)
+            catch (SqlException err)
             {
-
+                errorFormDisplay(err.Message);
             }
         }
 
@@ -50,10 +50,12 @@ namespace UserAdministration
                 List<TextBox> textBoxes = groupBox1.Controls.OfType<TextBox>().ToList();
                 if (textBoxes.All(textbox => !string.IsNullOrWhiteSpace(textbox.Text)))
                     ORM.Insert(textBoxes.Select(select => select.Text).ToList(), textBoxes.Select(select => select.Name.Substring(0, select.Name.Length - 3)).ToList(),roles);
+                else
+                    errorFormDisplay("Please complete all fields");
             }
-            catch (SqlException)
+            catch (SqlException err)
             {
-
+                errorFormDisplay(err.Message);
             }
             finally
             {
@@ -70,14 +72,16 @@ namespace UserAdministration
                 List<TextBox> textBoxes = groupBox1.Controls.OfType<TextBox>().ToList();
                 if (textBoxes.All(textbox => !string.IsNullOrWhiteSpace(textbox.Text)))
                     ORM.Update(id, textBoxes.Select(select => select.Text).ToList(), textBoxes.Select(select => select.Name.Substring(0, select.Name.Length - 3)).ToList(), roles);
+                else
+                    errorFormDisplay("Please complete all fields");
             }
             catch (ArgumentOutOfRangeException)
             {
 
             }
-            catch (SqlException)
+            catch (SqlException err)
             {
-
+                errorFormDisplay(err.Message);
             }
             finally
             {
@@ -91,9 +95,9 @@ namespace UserAdministration
             {
                 ORM.Delete(Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value));
             }
-            catch (SqlException)
+            catch (SqlException err)
             {
-
+                RoleManagement error = new RoleManagement(err.Message);
             }
             finally
             {
@@ -126,7 +130,7 @@ namespace UserAdministration
             if (dataGridView1.Enabled)
                 refreshDB();
             else
-                dataGridView1.Rows.Clear();
+                dataGridView1.DataSource = null;
         }
 
         private void buttonControl(bool a)
@@ -144,6 +148,7 @@ namespace UserAdministration
             {
                 deleteButton.Enabled = true;
                 editButton.Enabled = true;
+                tokenDropButton.Enabled = true;
                 DataGridViewCellCollection row = dataGridView1.SelectedRows[0].Cells;
                 manageTextBox(row[1].Value.ToString().Trim(), row[2].Value.ToString().Trim(), row[3].Value.ToString().Trim(), row[10].Value.ToString().Trim());
                 try
@@ -163,9 +168,9 @@ namespace UserAdministration
                         }
                     }
                 }
-                catch (SqlException)
+                catch (SqlException err)
                 {
-
+                    errorFormDisplay(err.Message);
                 }
             }
         }
@@ -187,26 +192,54 @@ namespace UserAdministration
             dataGridView1.ClearSelection();
             deleteButton.Enabled = false;
             editButton.Enabled = false;
+            tokenDropButton.Enabled = false;
+            manageTextBox();
         }
 
         private void roleButton_Click(object sender, EventArgs e)
         {
-
+            Form3 roleManagement = new Form3(ORM);
+            roleManagement.ShowDialog();
+            manageCheckboxRole();
         }
 
         private void checkedListBox1_EnabledChanged(object sender, EventArgs e)
         {
+            if (roleBox.Enabled)
+                manageCheckboxRole();
+            else
+                roleBox.Items.Clear();
+        }
+
+        private void tokenDropButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ORM.DropToken(Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value));
+            }
+            catch (ArgumentOutOfRangeException) { }
+            catch (SqlException err)
+            {
+                errorFormDisplay(err.Message);
+            }
+        }
+
+        private void errorFormDisplay(string msg)
+        {
+            RoleManagement error = new RoleManagement(msg);
+            error.ShowDialog();
+        }
+
+        private void manageCheckboxRole()
+        {
+            roleBox.Items.Clear();
             using (SqlDataReader reader = ORM.Select("Roles").ExecuteReader())
             {
-                if (roleBox.Enabled)
-                    while (reader.Read())
-
-                    {
-                        Box cb = new Box(reader.GetInt32(0), reader.GetString(1));
-                        roleBox.Items.Add(cb);
-                    }
-                else
-                    roleBox.Items.Clear();
+                while (reader.Read())
+                {
+                    Box cb = new Box(reader.GetInt32(0), reader.GetString(1));
+                    roleBox.Items.Add(cb);
+                }
             }
         }
     }

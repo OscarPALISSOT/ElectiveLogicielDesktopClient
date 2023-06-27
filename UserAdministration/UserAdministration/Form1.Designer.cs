@@ -47,6 +47,7 @@ namespace UserAdministration
             this.EmailBox = new System.Windows.Forms.TextBox();
             this.LastNameBox = new System.Windows.Forms.TextBox();
             this.FirstNameBox = new System.Windows.Forms.TextBox();
+            this.tokenDropButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -237,11 +238,23 @@ namespace UserAdministration
             this.FirstNameBox.Size = new System.Drawing.Size(297, 27);
             this.FirstNameBox.TabIndex = 0;
             // 
+            // tokenDropButton
+            // 
+            this.tokenDropButton.Enabled = false;
+            this.tokenDropButton.Location = new System.Drawing.Point(328, 455);
+            this.tokenDropButton.Name = "tokenDropButton";
+            this.tokenDropButton.Size = new System.Drawing.Size(94, 29);
+            this.tokenDropButton.TabIndex = 7;
+            this.tokenDropButton.Text = "Drop Token";
+            this.tokenDropButton.UseVisualStyleBackColor = true;
+            this.tokenDropButton.Click += new System.EventHandler(this.tokenDropButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1149, 496);
+            this.Controls.Add(this.tokenDropButton);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.connectButton);
@@ -251,7 +264,7 @@ namespace UserAdministration
             this.Controls.Add(this.searchButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "UserManagement";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -279,6 +292,7 @@ namespace UserAdministration
         private System.Windows.Forms.TextBox FirstNameBox;
         private System.Windows.Forms.Button roleButton;
         private System.Windows.Forms.CheckedListBox roleBox;
+        private System.Windows.Forms.Button tokenDropButton;
     }
 }
 

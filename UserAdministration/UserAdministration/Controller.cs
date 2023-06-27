@@ -52,10 +52,10 @@ namespace UserAdministration
             return command;
         }
 
-        public void Delete(int ID){
+        public void Delete(int ID, bool Users = true){
             using (SqlCommand command = connection.CreateCommand())
             {
-                command.CommandText = string.Format("DELETE FROM UserRole WHERE UserID = {0};DELETE FROM Users WHERE UserID = {0};", ID);
+                command.CommandText = Users ? string.Format("DELETE FROM UserRole WHERE UserID = {0};DELETE FROM Users WHERE UserID = {0};", ID) : string.Format("DELETE FROM UserRole WHERE IDRole = {0};DELETE FROM Roles WHERE IDRole = {0};", ID);
                 command.ExecuteNonQuery();
             }
         }
@@ -80,14 +80,43 @@ namespace UserAdministration
             }
         }
 
+        public void UpdateRole(int ID, string value)
+        {
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText = string.Format("UPDATE Roles SET Roles = '{0}' WHERE IDRole = '{1}';",value, ID);
+                command.ExecuteNonQuery();
+            }
+        }
+
         public void Insert(List<string> values, List<string> columns, List<Box> roles)
         {
-            SqlCommand command = connection.CreateCommand();
-            command.CommandText = string.Format("INSERT INTO Users({0}) VALUES('{1}');", string.Join(",", columns), string.Join("','", values));
-            command.CommandText += "DECLARE @id INT; SET @id = @@IDENTITY;";
-            foreach (Box role in roles)
-                command.CommandText += string.Format("INSERT INTO UserRole (UserID, IDRole) VALUES (@id, {0});", role.ID) ;
-            command.ExecuteNonQuery();
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText = string.Format("INSERT INTO Users({0}) VALUES('{1}');", string.Join(",", columns), string.Join("','", values));
+                command.CommandText += "DECLARE @id INT; SET @id = @@IDENTITY;";
+                foreach (Box role in roles)
+                    command.CommandText += string.Format("INSERT INTO UserRole (UserID, IDRole) VALUES (@id, {0});", role.ID);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void InsertRole(string value)
+        {
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText = string.Format("INSERT INTO Roles(Roles) VALUES('{0}');", value);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void DropToken(int ID)
+        {
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText = string.Format("UPDATE Users SET Token = NULL, TokenExpiration = NULL, RefreshToken = NULL, RefreshExpiration = NULL, UpdatedAt = GETDATE() WHERE UserID = '{0}'", ID);
+                command.ExecuteNonQuery();
+            }
         }
     }
 }

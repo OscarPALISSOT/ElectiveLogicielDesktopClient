@@ -102,7 +102,7 @@ namespace UserAdministration
             this.Controls.Add(this.confirmButton);
             this.Controls.Add(this.cancelButton);
             this.Name = "Form2";
-            this.Text = "Form2";
+            this.Text = "Connection";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form2_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
