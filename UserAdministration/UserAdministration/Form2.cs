@@ -32,8 +32,8 @@ namespace UserAdministration
                     mother.connected = true;
                     this.Close();
                 }
-                catch (SqlException) {
-
+                catch (SqlException err) {
+                    errorFormDisplay(err.Message);
                 }
             }
         }
@@ -47,5 +47,10 @@ namespace UserAdministration
         {
 
         }
+        private void errorFormDisplay(string msg)
+        {
+            RoleManagement error = new RoleManagement(msg);
+            error.ShowDialog();
+        }   
     }
 }

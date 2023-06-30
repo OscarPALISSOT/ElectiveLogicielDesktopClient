@@ -7,6 +7,8 @@ namespace UserAdministration
 {
     /// <summary>
     /// You opened it... I came.
+    /// 
+    /// Handle the ID of the each Role of the Databse, so it can easily be recovered by other elements
     /// </summary>
     public class Box
     {

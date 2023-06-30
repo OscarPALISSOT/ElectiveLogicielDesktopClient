@@ -63,6 +63,8 @@ namespace UserAdministration
         public void Update(int ID, List<string> values, List<string> columns, List<Box> roles){
             using (SqlCommand command = connection.CreateCommand())
             {
+                int index = columns.FindIndex(s => s == "Password");
+                values[index] = BCrypt.Net.BCrypt.HashPassword(values[index], BCrypt.Net.BCrypt.GenerateSalt(10));
                 command.CommandText = "UPDATE Users SET ";
                 for (int i = 0; i < columns.Count; i++)
                 {
@@ -93,6 +95,8 @@ namespace UserAdministration
         {
             using (SqlCommand command = connection.CreateCommand())
             {
+                int index = columns.FindIndex(s => s == "Password");
+                values[index] = BCrypt.Net.BCrypt.HashPassword(values[index],BCrypt.Net.BCrypt.GenerateSalt(10));
                 command.CommandText = string.Format("INSERT INTO Users({0}) VALUES('{1}');", string.Join(",", columns), string.Join("','", values));
                 command.CommandText += "DECLARE @id INT; SET @id = @@IDENTITY;";
                 foreach (Box role in roles)

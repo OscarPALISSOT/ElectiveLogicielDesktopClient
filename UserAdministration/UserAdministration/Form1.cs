@@ -150,7 +150,7 @@ namespace UserAdministration
                 editButton.Enabled = true;
                 tokenDropButton.Enabled = true;
                 DataGridViewCellCollection row = dataGridView1.SelectedRows[0].Cells;
-                manageTextBox(row[1].Value.ToString().Trim(), row[2].Value.ToString().Trim(), row[3].Value.ToString().Trim(), row[10].Value.ToString().Trim());
+                manageTextBox(row[1].Value.ToString().Trim(), row[2].Value.ToString().Trim(), row[10].Value.ToString().Trim());
                 try
                 {
                     using (SqlDataReader reader = ORM.SelectRole(Convert.ToInt32(row[0].Value)))
@@ -175,11 +175,11 @@ namespace UserAdministration
             }
         }
 
-        private void manageTextBox(string firstName = "", string lastName = "", string password = "", string mail = "")
+        private void manageTextBox(string firstName = "", string lastName = "", string mail = "")
         {
             FirstNameBox.Text = firstName;
             LastNameBox.Text = lastName;
-            PasswordBox.Text = password;
+            PasswordBox.Text = "";
             EmailBox.Text = mail;
         }
 

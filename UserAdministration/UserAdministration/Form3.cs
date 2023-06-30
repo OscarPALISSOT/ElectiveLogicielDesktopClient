@@ -44,6 +44,8 @@ namespace UserAdministration
                 {
                     ORM.InsertRole(roleTextbox.Text);
                 }
+                else
+                    errorFormDisplay("Please fill all the fields.");
             }
             catch (SqlException err)
             {
@@ -58,7 +60,7 @@ namespace UserAdministration
         private void deleteButton_Click(object sender, EventArgs e)
         {
             try { ORM.Delete(Convert.ToInt32(roleGridView.SelectedRows[0].Cells[0].Value), false); } 
-            catch (SqlException err) { } 
+            catch (SqlException err) { errorFormDisplay(err.Message); } 
             finally { refreshDB(); }
         }
 
@@ -79,6 +81,8 @@ namespace UserAdministration
                 {
                     ORM.UpdateRole(System.Convert.ToInt32(roleGridView.SelectedRows[0].Cells[0].Value), roleTextbox.Text);
                 }
+                else
+                    errorFormDisplay("Please fill all the fields.");
             }
             catch (SqlException err)
             {
